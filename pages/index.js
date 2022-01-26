@@ -1,37 +1,7 @@
 import React from "react";
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import { useRouter } from "next/router";
 import appConfig from "../config.json";
-
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: "Open Sans", sans-serif;
-      }
-      /* App fit Height */
-      html,
-      body,
-      #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */
-    `}</style>
-  );
-}
 
 function Titulo(props) {
     const Tag = props.tag || 'h1'
@@ -68,16 +38,18 @@ function Titulo(props) {
 
 
 export default function PaginaInicial() {
-  const username = 'peas';
-
+  //const username = 'th-fernandes';
+  const [username, setUsername] = React.useState()
+  const roteamento = useRouter()
+  console.log(roteamento)
   return (
     <>
-      <GlobalStyle />
+      
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backgroundColor: appConfig.theme.colors.primary[500],
-          backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)',
+          backgroundImage: 'url(https://wallpapercave.com/wp/wp4341592.jpg)',
           backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
         }}
       >
@@ -98,6 +70,11 @@ export default function PaginaInicial() {
         >
           {/* Formulário */}
           <Box
+          onSubmit = {(el) => {
+            el.preventDefault()
+            //troca para a pagina de chat sem reload (spa)
+            roteamento.push('./chat')
+          }}
             as="form"
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -105,11 +82,15 @@ export default function PaginaInicial() {
             }}
           >
             <Titulo tag="h2" >Boas vindas de volta!</Titulo>
-            <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
+            <Text variant="body3" styleSheet={{ marginBottom: '16px', color: appConfig.theme.colors.neutrals[300] }}>
               {appConfig.name}
             </Text>
 
+            {/* <input value={username} onChange={(el) => setUsername(el.target.value)}/> */}
+
             <TextField
+              value={username}
+              onChange={(el) => setUsername(el.target.value)}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -125,10 +106,14 @@ export default function PaginaInicial() {
               label='Entrar'
               fullWidth
               buttonColors={{
+                
                 contrastColor: appConfig.theme.colors.neutrals["000"],
-                mainColor: appConfig.theme.colors.primary[500],
+                mainColor: appConfig.theme.colors.primary[900],
                 mainColorLight: appConfig.theme.colors.primary[400],
                 mainColorStrong: appConfig.theme.colors.primary[600],
+              }}
+              styleSheet={{
+                marginTop: '8px',
               }}
             />
           </Box>
@@ -141,10 +126,8 @@ export default function PaginaInicial() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              maxWidth: '200px',
+              maxWidth: '280px',
               padding: '16px',
-              backgroundColor: appConfig.theme.colors.neutrals[800],
-              border: '1px solid',
               borderColor: appConfig.theme.colors.neutrals[999],
               borderRadius: '10px',
               flex: 1,
@@ -153,18 +136,28 @@ export default function PaginaInicial() {
           >
             <Image
               styleSheet={{
+                border: 'none',
                 borderRadius: '50%',
                 marginBottom: '16px',
+                width: '248px',
+                height: '248px',
               }}
               src={`https://github.com/${username}.png`}
             />
             <Text
               variant="body4"
               styleSheet={{
+                backgroundImage:"url(http://cdn.onlinewebfonts.com/svg/img_212716.png)" ,
+                width: '80%',
+                minHeight: '33px',
+                margin: '0 auto',
+                textAlign: 'center',
+                fontSize: '20px',
                 color: appConfig.theme.colors.neutrals[200],
                 backgroundColor: appConfig.theme.colors.neutrals[900],
                 padding: '3px 10px',
-                borderRadius: '1000px'
+                borderRadius: '1000px',
+                textTransform: 'uppercase'
               }}
             >
               {username}
