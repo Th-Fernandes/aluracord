@@ -30,8 +30,6 @@ function GlobalStyle() {
 }
 
 export default function MyApp({ Component, pageProps }) {
-  console.log("haha");
-
   return (
     <>
       <GlobalStyle />

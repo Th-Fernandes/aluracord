@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
 import { useRouter } from "next/router";
 import appConfig from "../config.json";
@@ -41,10 +41,17 @@ export default function PaginaInicial() {
   //const username = 'th-fernandes';
   const [username, setUsername] = React.useState()
   const roteamento = useRouter()
-  console.log(roteamento)
+
+  const [githubInfo, setgithubInfo] = React.useState()
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}`)
+      .then(response => response.json())
+      .then(data => setgithubInfo(data))
+  }, [])
+
   return (
-    <>
-      
+    <>     
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -70,7 +77,7 @@ export default function PaginaInicial() {
         >
           {/* Formulário */}
           <Box
-          onSubmit = {(el) => {
+            onSubmit = {(el) => {
             el.preventDefault()
             //troca para a pagina de chat sem reload (spa)
             roteamento.push('./chat')
@@ -89,8 +96,17 @@ export default function PaginaInicial() {
             {/* <input value={username} onChange={(el) => setUsername(el.target.value)}/> */}
 
             <TextField
+              id='user'
               value={username}
-              onChange={(el) => setUsername(el.target.value)}
+              onChange={(el) => {
+                const inputValue = el.target.value
+                console.log(githubInfo)
+                if(inputValue.length > 2) {
+                  return setUsername(inputValue)
+                }
+
+                
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -143,6 +159,7 @@ export default function PaginaInicial() {
                 height: '248px',
               }}
               src={`https://github.com/${username}.png`}
+
             />
             <Text
               variant="body4"
