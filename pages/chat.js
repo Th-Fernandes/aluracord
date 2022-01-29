@@ -3,6 +3,9 @@ import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
 import { userValue } from './index';
+import { useRouter } from 'next/router';
+
+
 
 //ACESSO PELO NAVEGADOR SEM BACKEND
 const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
@@ -17,6 +20,10 @@ export default function ChatPage() {
   // Sua lógica vai aqui
   const [mensagem, setMensagem] = React.useState()
   const [listaDeMensagens, setListaDeMensagens] = React.useState([])
+
+  if(userValue == undefined) {
+    useRouter().push('../')
+  }
 
   React.useEffect(() => {
     supabaseClient
@@ -272,6 +279,9 @@ function MessageList(props) {
       }}
       onChange = {
         props.setLoading(false)
+      }
+      onMouseOver = {
+        console.log('hahahahhahahahahaha')
       }
     >
       {props.mensagens.map((mensagem) => {
