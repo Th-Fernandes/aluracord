@@ -1,31 +1,104 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+import { userValue } from './index';
+
+//ACESSO PELO NAVEGADOR SEM BACKEND
+const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
+// FAZER REQUISIÇÃO PRO BANCO DE DADOS INTERMEDIADO PELA URL
+const  SUPABASE_URL = 'https://wlxwthigsrhywgfyglgd.supabase.co'
+const supabaseClient = createClient(SUPABASE_URL , SUPABASE_ANNON_KEY)
+
+
+//console.log(dadosDoSupaBase)
 
 export default function ChatPage() {
   // Sua lógica vai aqui
   const [mensagem, setMensagem] = React.useState()
   const [listaDeMensagens, setListaDeMensagens] = React.useState([])
 
+  React.useEffect(() => {
+    supabaseClient
+      .from('mensagens') //a tabela criada no supabase
+      .select('*') //todos os elementos da tabela
+      .order('id', {ascending: false}) //METODO DA BIBLIOTECA DO SUPABASE
+      .then((response) => {
+        setListaDeMensagens(response.data)
+      })
+  }, [])
+
+  const [loading, setLoading] = React.useState(true)
+
   function handleNovaMensagem(novaMensagem) {
     // se a mensagem tiver ao menos um caracter, a lógica prossegue
     if(novaMensagem.length >= 1) {
       const mensagem = {
-        id: listaDeMensagens.length + 1,
-        de: 'th-fernandes',
+        //id: listaDeMensagens.length + 1,
+        de: userValue,
         texto: novaMensagem
       }
-  
-      setListaDeMensagens([
-        mensagem,
-        ...listaDeMensagens,
-      ])
-      setMensagem('')
+
+      supabaseClient
+        .from('mensagens')
+        .insert([mensagem])
+        .then((response) => {
+          setListaDeMensagens([
+            response.data[0],
+            ...listaDeMensagens,
+          ])
+          setMensagem('')
+        })
+
+      
     }
     else {
       console.error('não é possível enviar mensagem vazia')
     }
-    
+  }
+
+  function Loading() {
+    if(loading == false) {
+      return (
+        <Box
+        styleSheet={{
+          display: 'none',
+          visibility: 'hidden',
+          opacity: 0
+        }}
+      >
+        <Image 
+          src='https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif'
+          styleSheet={{
+            width: '50px',
+            opacity: 0.5
+          }}
+          />
+      </Box>
+      )
+    }
+
+    return(
+      <Box
+        styleSheet={{
+          width: '100%',
+          height: '100vh',
+          position: 'fixed',
+          zIndex: 999,
+          display:'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image 
+          src='https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif'
+          styleSheet={{
+            width: '50px',
+            opacity: 0.5
+          }}
+          />
+      </Box>
+    )
   }
   // ./Sua lógica vai aqui
   return (
@@ -66,7 +139,7 @@ export default function ChatPage() {
           }}
         >
 
-          <MessageList mensagens={listaDeMensagens} />
+          <MessageList mensagens={listaDeMensagens}  setLoading={setLoading}/>
 
           <Box
             as="form"
@@ -94,6 +167,7 @@ export default function ChatPage() {
               }}
               onKeyPress={(event) => {
                 if (event.key == 'Enter') {
+                  //PRA CANCELAR A QUEBRA DE LINHA PADRÃO DO TEXTAREA
                   event.preventDefault()
                   console.log('enter')
                   //pega todos os valores anteriores ja gravadoes em listaDeMensagens, e acrescenta a nov amsg
@@ -158,6 +232,8 @@ export default function ChatPage() {
           </Box>
         </Box>
       </Box>
+
+      <Loading />
     </Box>
   )
 }
@@ -181,7 +257,7 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log('MessageList', props);
+  //console.log('MessageList', props);
   return (
     <Box
       tag="ul"
@@ -194,6 +270,9 @@ function MessageList(props) {
         marginBottom: '16px',
         overflowX: 'hidden',
       }}
+      onChange = {
+        props.setLoading(false)
+      }
     >
       {props.mensagens.map((mensagem) => {
         return (
@@ -218,27 +297,53 @@ function MessageList(props) {
             >
               <Image
                 styleSheet={{
-                  width: '20px',
-                  height: '20px',
+                  width: '30px',
+                  height: '30px',
                   borderRadius: '50%',
                   display: 'inline-block',
                   marginRight: '8px',
                 }}
-                src={`https://github.com/vanessametonini.png`}
+                src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong">
+              <Text tag="strong" styleSheet={{minWidth: '100px'}}>
                 {mensagem.de}
               </Text>
-              <Text
+
+              {/* data + deletar mensagem container */}
+              <Box
                 styleSheet={{
-                  fontSize: '10px',
-                  marginLeft: '8px',
-                  color: appConfig.theme.colors.neutrals[300],
+                  width: '100%',
+                  display: 'flex',
+                  alignItens: 'center',
+                  justifyContent: 'space-between'
                 }}
-                tag="span"
               >
-               {(new Date().toLocaleTimeString())} - {(new Date().toLocaleDateString())} 
-              </Text>
+                <Text
+                  styleSheet={{
+                    fontSize: '10px',
+                    marginLeft: '8px',
+                    color: appConfig.theme.colors.neutrals[300],
+                  }}
+                  tag="span"
+                >
+                {(new Date().toLocaleTimeString())} - {(new Date().toLocaleDateString())} 
+                </Text>
+
+                <Image
+                id={mensagem.id}
+                onClick={(event) => {
+                  console.log(props.setter)
+                  const filtrarMensagem = props.mensagens.filter((el) => el.id == event.target.id)
+                  console.log(filtrarMensagem)
+                }}
+                src='https://cdn0.iconfinder.com/data/icons/controls-and-navigation-arrows-3/24/146-512.png'
+                styleSheet={{
+                  width: '10px',
+                  cursor: 'pointer'
+                }}
+              />
+              </Box>
+
             </Box>
             {mensagem.texto}
           </Text>

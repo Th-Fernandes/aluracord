@@ -36,6 +36,8 @@ function Titulo(props) {
 //}
 //export default HomePage
 
+export let userValue;
+
 
 export default function PaginaInicial() {
   //const username = 'th-fernandes';
@@ -47,7 +49,7 @@ export default function PaginaInicial() {
   useEffect(() => {
     fetch(`https://api.github.com/users/${username}`)
       .then(response => response.json())
-      .then(data => setgithubInfo(data))
+      .then(data => console.log(data))
   }, [])
 
   return (
@@ -100,12 +102,11 @@ export default function PaginaInicial() {
               value={username}
               onChange={(el) => {
                 const inputValue = el.target.value
-                console.log(githubInfo)
                 if(inputValue.length > 2) {
+                  userValue = inputValue
+                  console.log(userValue)
                   return setUsername(inputValue)
-                }
-
-                
+                }  
               }}
               fullWidth
               textFieldColors={{
@@ -181,8 +182,12 @@ export default function PaginaInicial() {
             </Text>
           </Box>
           {/* Photo Area */}
+
         </Box>
+
+        
       </Box>
+
     </>
   );
 }
