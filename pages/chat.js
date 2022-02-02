@@ -2,47 +2,61 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
-import { userValue } from './index';
 import { useRouter } from 'next/router';
-
-
+import { ButtonSendSticker } from '../src/components/buttonSendSticker'
 
 //ACESSO PELO NAVEGADOR SEM BACKEND
 const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
 // FAZER REQUISIÇÃO PRO BANCO DE DADOS INTERMEDIADO PELA URL
-const  SUPABASE_URL = 'https://wlxwthigsrhywgfyglgd.supabase.co'
-const supabaseClient = createClient(SUPABASE_URL , SUPABASE_ANNON_KEY)
+const SUPABASE_URL = 'https://wlxwthigsrhywgfyglgd.supabase.co'
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANNON_KEY)
 
-
-//console.log(dadosDoSupaBase)
+function escutaMensagensRealTime(adicionaMensagem) {
+  return supabaseClient
+  .from('mensagens')
+  .on('INSERT', (response) => {
+    adicionaMensagem(response.new)
+  }).subscribe()
+}
 
 export default function ChatPage() {
+  const roteamento = useRouter()
+  const usuarioLogado = roteamento.query.username
   // Sua lógica vai aqui
   const [mensagem, setMensagem] = React.useState()
   const [listaDeMensagens, setListaDeMensagens] = React.useState([])
-
-  if(userValue == undefined) {
-    useRouter().push('../')
-  }
 
   React.useEffect(() => {
     supabaseClient
       .from('mensagens') //a tabela criada no supabase
       .select('*') //todos os elementos da tabela
-      .order('id', {ascending: false}) //METODO DA BIBLIOTECA DO SUPABASE
+      .order('id', { ascending: false }) //METODO DA BIBLIOTECA DO SUPABASE
       .then((response) => {
         setListaDeMensagens(response.data)
       })
+
+      escutaMensagensRealTime((novaMensagem) => {
+        console.log(novaMensagem)
+        //o react não diz para esse trecho de código que a lista de mensagens está sendo atualizada, para isso, no setListadeMensagens devemos passar uma função com retorno para contornar o problema
+        setListaDeMensagens((listaDeMensagensAtual) => {
+          return [
+            novaMensagem,
+            ...listaDeMensagensAtual,
+          ]
+        })
+      })
+
+      
   }, [])
 
-  const [loading, setLoading] = React.useState(true)
+  
 
   function handleNovaMensagem(novaMensagem) {
     // se a mensagem tiver ao menos um caracter, a lógica prossegue
-    if(novaMensagem.length >= 1) {
+    if (novaMensagem.length >= 1) {
       const mensagem = {
         //id: listaDeMensagens.length + 1,
-        de: userValue,
+        de: usuarioLogado,
         texto: novaMensagem
       }
 
@@ -50,60 +64,58 @@ export default function ChatPage() {
         .from('mensagens')
         .insert([mensagem])
         .then((response) => {
-          setListaDeMensagens([
-            response.data[0],
-            ...listaDeMensagens,
-          ])
-          setMensagem('')
+          
         })
+        setMensagem('')
 
-      
     }
     else {
       console.error('não é possível enviar mensagem vazia')
     }
   }
 
+  const [loading, setLoading] = React.useState(true)
+
   function Loading() {
-    if(loading == false) {
+    if (loading == false) {
       return (
         <Box
-        styleSheet={{
-          display: 'none',
-          visibility: 'hidden',
-          opacity: 0
-        }}
-      >
-        <Image 
-          src='https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif'
           styleSheet={{
-            width: '50px',
-            opacity: 0.5
+            display: 'none',
+            visibility: 'hidden',
+            opacity: 0
           }}
+        >
+          <Image
+            src='https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif'
+            styleSheet={{
+              width: '50px',
+              opacity: 0.5
+            }}
           />
-      </Box>
+        </Box>
       )
     }
 
-    return(
+    return (
       <Box
         styleSheet={{
           width: '100%',
           height: '100vh',
           position: 'fixed',
           zIndex: 999,
-          display:'flex',
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}
       >
-        <Image 
+        <Image
           src='https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif'
           styleSheet={{
             width: '50px',
             opacity: 0.5
           }}
-          />
+        />
       </Box>
     )
   }
@@ -146,7 +158,7 @@ export default function ChatPage() {
           }}
         >
 
-          <MessageList mensagens={listaDeMensagens}  setLoading={setLoading}/>
+          <MessageList mensagens={listaDeMensagens} setLoading={setLoading} />
 
           <Box
             as="form"
@@ -201,30 +213,22 @@ export default function ChatPage() {
                 display: 'flex',
                 justifyContent: 'flex-end',
                 width: '100%',
-              }}  
+              }}
             >
 
-              <Image
-                id='enviarFigurinha'
-                src='https://cdn-icons-png.flaticon.com/512/42/42877.png'
-                styleSheet={{
-                  width: '30px',
-                  padding: '2px',
-                  backgroundColor: appConfig.theme.colors.primary[300],
-                  borderRadius: '50%',
-                  cursor: 'pointer',                 
-                }}
-              />
+              <ButtonSendSticker onStickerClick={(sticker) => handleNovaMensagem(`:sticker: ${sticker}`)} />
+
               <Image
                 id='enviarMensagem'
-                onClick= {(event) => {
+                onClick={(event) => {
                   event.preventDefault()
                   //pega todos os valores anteriores ja gravadoes em listaDeMensagens, e acrescenta a nov amsg
                   handleNovaMensagem(mensagem)
                 }}
                 src='https://cdn-icons-png.flaticon.com/512/81/81799.png'
                 styleSheet={{
-                  width: '30px',
+                  Width: '30px',
+                  Height: '30px',
                   padding: '2px',
                   backgroundColor: appConfig.theme.colors.primary[300],
                   borderRadius: '50%',
@@ -234,7 +238,7 @@ export default function ChatPage() {
                 }}
               />
 
-              
+
             </Box>
           </Box>
         </Box>
@@ -277,11 +281,8 @@ function MessageList(props) {
         marginBottom: '16px',
         overflowX: 'hidden',
       }}
-      onChange = {
+      onChange={
         props.setLoading(false)
-      }
-      onMouseOver = {
-        console.log('hahahahhahahahahaha')
       }
     >
       {props.mensagens.map((mensagem) => {
@@ -315,7 +316,7 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong" styleSheet={{minWidth: '100px'}}>
+              <Text tag="strong" styleSheet={{ minWidth: '100px' }}>
                 {mensagem.de}
               </Text>
 
@@ -336,26 +337,40 @@ function MessageList(props) {
                   }}
                   tag="span"
                 >
-                {(new Date().toLocaleTimeString())} - {(new Date().toLocaleDateString())} 
+                  {(new Date().toLocaleTimeString())} - {(new Date().toLocaleDateString())}
+
                 </Text>
 
                 <Image
-                id={mensagem.id}
-                onClick={(event) => {
-                  console.log(props.setter)
-                  const filtrarMensagem = props.mensagens.filter((el) => el.id == event.target.id)
-                  console.log(filtrarMensagem)
-                }}
-                src='https://cdn0.iconfinder.com/data/icons/controls-and-navigation-arrows-3/24/146-512.png'
-                styleSheet={{
-                  width: '10px',
-                  cursor: 'pointer'
-                }}
-              />
+                  id={mensagem.id}
+                  onClick={(event) => {
+                    console.log(props.setter)
+                    const filtrarMensagem = props.mensagens.filter((el) => el.id == event.target.id)
+                    console.log(filtrarMensagem)
+                  }}
+                  src='https://cdn0.iconfinder.com/data/icons/controls-and-navigation-arrows-3/24/146-512.png'
+                  styleSheet={{
+                    width: '10px',
+                    cursor: 'pointer'
+                  }}
+                />
               </Box>
 
             </Box>
-            {mensagem.texto}
+            {mensagem.texto.startsWith(':sticker:')
+            //if temario
+              ? (
+                <Image 
+                  src={mensagem.texto.replace(':sticker:', '')} 
+                  styleSheet={{width: '150px'}}
+                  />
+              )
+              : (
+                mensagem.texto
+              )
+            }
+              
+            
           </Text>
         )
       })}

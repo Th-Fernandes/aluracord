@@ -23,22 +23,6 @@ function Titulo(props) {
     );
 }
 
-//class HomePage extends React.Component {
-//render() {
-//return(
-//<div>
-//<GlobalStyle />
-//<Title tag='h1'>Boas vindas de volta</Title>
-//<h2>Discord - aluraTrix</h2>
-//</div>
-//)
-//}
-//}
-//export default HomePage
-
-export let userValue;
-
-
 export default function PaginaInicial() {
   //const username = 'th-fernandes';
   const [username, setUsername] = React.useState()
@@ -79,12 +63,13 @@ export default function PaginaInicial() {
         >
           {/* Formulário */}
           <Box
+            as="form"
             onSubmit = {(el) => {
             el.preventDefault()
             //troca para a pagina de chat sem reload (spa)
-            roteamento.push('./chat')
+            roteamento.push(`./chat?username=${username}`)
           }}
-            as="form"
+            
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -103,8 +88,6 @@ export default function PaginaInicial() {
               onChange={(el) => {
                 const inputValue = el.target.value
                 if(inputValue.length > 2) {
-                  userValue = inputValue
-                  console.log(userValue)
                   return setUsername(inputValue)
                 }  
               }}
