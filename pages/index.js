@@ -8,8 +8,9 @@ import { usuarios } from "../src/Usuarios";
 export default function PaginaInicial() {
   const [username, setUsername] = React.useState()
   const [loginPassword, setLoginPassword] = React.useState()
-  const roteamento = useRouter()
 
+  const roteamento = useRouter()
+  
   return (
     <>
       <Box
