@@ -1,3 +1,5 @@
+import Head from "next/head";
+
 function GlobalStyle() {
   return (
     <style global jsx>{`
@@ -7,8 +9,13 @@ function GlobalStyle() {
         box-sizing: border-box;
         list-style: none;
       }
+
+      html {
+        font-size: 62.5%
+      }
       body {
         font-family: "Open Sans", sans-serif;
+        
       }
       /* App fit Height */
       html,
@@ -32,6 +39,9 @@ function GlobalStyle() {
 export default function MyApp({ Component, pageProps }) {
   return (
     <>
+      <Head>
+          <title>QUICK CHAT</title>
+        </Head>
       <GlobalStyle />
       <Component {...pageProps} />
     </>

@@ -49,8 +49,6 @@ export default function ChatPage() {
       
   }, [])
 
-  
-
   function handleNovaMensagem(novaMensagem) {
     // se a mensagem tiver ao menos um caracter, a lógica prossegue
     if (novaMensagem.length >= 1) {
@@ -368,9 +366,7 @@ function MessageList(props) {
               : (
                 mensagem.texto
               )
-            }
-              
-            
+            }            
           </Text>
         )
       })}

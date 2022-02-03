@@ -1,176 +1,105 @@
 import React, { useEffect } from "react";
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import Cadastro from '../src/components/Cadastro';
 import { useRouter } from "next/router";
 import appConfig from "../config.json";
-
-function Titulo(props) {
-    const Tag = props.tag || 'h1'
-
-    return (
-      <>
-        <Tag>{props.children}</Tag>
-
-        <style jsx>
-          {`
-            ${Tag} {
-              color: ${appConfig.theme.colors.neutrals['000']};
-              font-size: 24px;
-              font-weight: 600;
-            }
-          `}
-        </style>
-      </>
-    );
-}
+import { usuarios } from "../src/Usuarios";
 
 export default function PaginaInicial() {
-  //const username = 'th-fernandes';
   const [username, setUsername] = React.useState()
+  const [loginPassword, setLoginPassword] = React.useState()
   const roteamento = useRouter()
 
-  const [githubInfo, setgithubInfo] = React.useState()
-
-  useEffect(() => {
-    fetch(`https://api.github.com/users/${username}`)
-      .then(response => response.json())
-      .then(data => console.log(data))
-  }, [])
-
   return (
-    <>     
+    <>
+      <Box
+      as="section"
+      styleSheet={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: appConfig.theme.colors.neutrals[100],
+        backgroundImage: 'url(https://wallpapercave.com/wp/wp4341592.jpg)',
+      }}
+    >
+      {/* main content */}
       <Box
         styleSheet={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.primary[500],
-          backgroundImage: 'url(https://wallpapercave.com/wp/wp4341592.jpg)',
-          backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+          width: { xs: '90%', sm: '90%', md: '80%', xl: '1200px' }, height: '80rem',
+          display: 'flex',
         }}
       >
+        {/*  login */}
         <Box
           styleSheet={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexDirection: {
-              xs: 'column',
-              sm: 'row',
-            },
-            width: '100%', maxWidth: '700px',
-            borderRadius: '5px', padding: '32px', margin: '16px',
-            boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-            backgroundColor: appConfig.theme.colors.neutrals[700],
+            flexGrow: 0.2,
+            backgroundColor: appConfig.theme.colors.primary[900],
+            borderRadius: '3.2rem 0 0 3.2rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}
         >
-          {/* Formulário */}
-          <Box
-            as="form"
-            onSubmit = {(el) => {
-            el.preventDefault()
-            //troca para a pagina de chat sem reload (spa)
-            roteamento.push(`./chat?username=${username}`)
-          }}
-            
-            styleSheet={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
-            }}
-          >
-            <Titulo tag="h2" >Boas vindas de volta!</Titulo>
-            <Text variant="body3" styleSheet={{ marginBottom: '16px', color: appConfig.theme.colors.neutrals[300] }}>
-              {appConfig.name}
-            </Text>
+          <Box styleSheet={{ color: appConfig.theme.colors.neutrals['000'], textAlign: 'center' }}>
+            <h1 style={{ fontSize: '6.2rem' }}>QUICK CHAT</h1>
+            <p style={{ color: appConfig.theme.colors.neutrals[300], marginBottom: '0.4rem' }}> chat de forma Simples, rápido e fácil</p>
+            <p style={{ color: appConfig.theme.colors.neutrals[300] }}> Faça login para aproveitar ao máximo a nossa ferramenta.</p>
 
-            {/* <input value={username} onChange={(el) => setUsername(el.target.value)}/> */}
+            <Box
+              as='form'
+              onSubmit={(el) => {
+                el.preventDefault()
+                /*
+                - fazer um map no array dos usuarios e fazer a verificação de ponta a ponta
 
-            <TextField
-              id='user'
-              value={username}
-              onChange={(el) => {
-                const inputValue = el.target.value
-                if(inputValue.length > 2) {
-                  return setUsername(inputValue)
-                }  
-              }}
-              fullWidth
-              textFieldColors={{
-                neutral: {
-                  textColor: appConfig.theme.colors.neutrals[200],
-                  mainColor: appConfig.theme.colors.neutrals[900],
-                  mainColorHighlight: appConfig.theme.colors.primary[500],
-                  backgroundColor: appConfig.theme.colors.neutrals[800],
-                },
-              }}
-            />
-            <Button
-              type='submit'
-              label='Entrar'
-              fullWidth
-              buttonColors={{
+                if(usuarios[0].nick == username && usuarios[0].senha == loginPassword) {
+                  roteamento.push(`./chat?username=${username}`)
+                }
+                */
+
+                usuarios.map((usuario) => {
+                  if(usuario.nick == username && usuario.senha == loginPassword) {
+                    roteamento.push(`./chat?username=${username}`)
+                  }
+                })
+
                 
-                contrastColor: appConfig.theme.colors.neutrals["000"],
-                mainColor: appConfig.theme.colors.primary[900],
-                mainColorLight: appConfig.theme.colors.primary[400],
-                mainColorStrong: appConfig.theme.colors.primary[600],
+                              
               }}
               styleSheet={{
-                marginTop: '8px',
-              }}
-            />
-          </Box>
-          {/* Formulário */}
-
-
-          {/* Photo Area */}
-          <Box
-            styleSheet={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              maxWidth: '280px',
-              padding: '16px',
-              borderColor: appConfig.theme.colors.neutrals[999],
-              borderRadius: '10px',
-              flex: 1,
-              minHeight: '240px',
-            }}
-          >
-            <Image
-              styleSheet={{
-                border: 'none',
-                borderRadius: '50%',
-                marginBottom: '16px',
-                width: '248px',
-                height: '248px',
-              }}
-              src={`https://github.com/${username}.png`}
-
-            />
-            <Text
-              variant="body4"
-              styleSheet={{
-                backgroundImage:"url(http://cdn.onlinewebfonts.com/svg/img_212716.png)" ,
-                width: '80%',
-                minHeight: '33px',
-                margin: '0 auto',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '0 3.2rem 3.2rem 0',
                 textAlign: 'center',
-                fontSize: '20px',
-                color: appConfig.theme.colors.neutrals[200],
-                backgroundColor: appConfig.theme.colors.neutrals[900],
-                padding: '3px 10px',
-                borderRadius: '1000px',
-                textTransform: 'uppercase'
+                marginTop: '1.2rem'
               }}
             >
-              {username}
-            </Text>
-          </Box>
-          {/* Photo Area */}
+              {/* login user */}
+              <Box>
+                <TextField 
+                onChange={(el) => {
+                   const userInputValue = el.target.value
+                   setUsername(userInputValue)
+                   console.log(username)
+                }}
+                  placeholder='nome de usuário' 
+                  textFieldColors='neutral' 
+                  styleSheet={{ backgroundColor: 'transparente' }} />
+                <TextField 
+                  onChange={(el) => {
+                    const passInputValue = el.target.value;
+                    setLoginPassword(passInputValue)
+                  }} 
+                  placeholder='senha' 
+                  textFieldColors='neutral' 
+                  type='password' 
+                  styleSheet={{ backgroundColor: 'transparente' }} />
 
+                <Button type='submit' label='login' colorVariant='dark' styleSheet={{ width: '15rem', marginTop: '1.5rem' }} />
+              </Box>
+            </Box>
+          </Box>
         </Box>
 
-        
+        {/* formulario de cadastro */}
+        <Cadastro/> 
       </Box>
-
+    </Box>
     </>
   );
 }
