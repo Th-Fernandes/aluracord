@@ -46,22 +46,12 @@ export default function PaginaInicial() {
               as='form'
               onSubmit={(el) => {
                 el.preventDefault()
-                /*
-                - fazer um map no array dos usuarios e fazer a verificação de ponta a ponta
-
-                if(usuarios[0].nick == username && usuarios[0].senha == loginPassword) {
-                  roteamento.push(`./chat?username=${username}`)
-                }
-                */
 
                 usuarios.map((usuario) => {
                   if(usuario.nick == username && usuario.senha == loginPassword) {
                     roteamento.push(`./chat?username=${username}`)
                   }
-                })
-
-                
-                              
+                })                             
               }}
               styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',

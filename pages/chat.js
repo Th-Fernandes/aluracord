@@ -4,6 +4,7 @@ import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router';
 import { ButtonSendSticker } from '../src/components/buttonSendSticker'
+import { usuarios } from '../src/Usuarios';
 
 //ACESSO PELO NAVEGADOR SEM BACKEND
 const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
@@ -66,6 +67,18 @@ export default function ChatPage() {
         })
         setMensagem('')
 
+        /* 
+          supabaseClient
+          .from('usuarios')
+          .insert(
+            usuarios.map((usuario) => {
+              return {
+                nick: usuario.nick,
+                senha: usuario.senha
+              }
+            }))
+        .then((response) =>{})
+        */
     }
     else {
       console.error('não é possível enviar mensagem vazia')

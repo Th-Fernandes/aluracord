@@ -23,29 +23,35 @@ export default function Cadastro() {
       as='form'
       onSubmit={(el) => {
         el.preventDefault()
-        // vai no array de usuarios e verifica se o usuario criado ja existe
-        const verificarExistenciaUser = usuarios.map((usuario) => {
-          //se ja existe, retorna true
-          if(usuario.nick == newUser) {
-            return true
-          }
-        })
-        // como o map retorna um array,procurei o index de true. se não houver true é pq a conta criada n existe, então ele permite a criação
-        if(verificarExistenciaUser.indexOf(true) < 0 && newPassword != undefined) {
-          const contaCriada = new Usuario({
-            nick: newUser,
-            senha: newPassword
-          })
-
-          supabaseClient
-            .from('usuarios')
-            .insert({
-              nick: newUser,
-              senha: newPassword
+      
+        supabaseClient
+          .from('usuarios')
+          .select()
+          .then((response) => {
+            const usuarios = response.body
+            let verificarExistenciaUser = usuarios.map((usuario) => {
+              if(usuario.nick == newUser) {
+                return true
+              }
             })
-            .then((response) => {})
-        }
 
+            if(verificarExistenciaUser.indexOf(true) < 0 && newPassword != undefined) {
+              const contaCriada = new Usuario({
+                nick: newUser,
+                senha: newPassword
+              })
+    
+              supabaseClient
+                .from('usuarios')
+                .insert({
+                  nick: newUser,
+                  senha: newPassword
+                })
+                .then((response) => {})
+            }
+            
+            console.log(verificarExistenciaUser)
+          })
         //roteamento.push(`./chat?username=th-fernandes`)
       }}
       styleSheet={{
