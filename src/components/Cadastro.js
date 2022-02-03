@@ -3,7 +3,14 @@ import { Box, Button, Text, TextField } from "@skynexui/components";
 import appConfig from '../../config.json';
 import { useRouter } from "next/router";
 import { usuarios } from '../Usuarios';
-import {Usuario} from '../Usuarios'
+import {Usuario} from '../Usuarios';
+import { createClient } from '@supabase/supabase-js'
+
+//ACESSO PELO NAVEGADOR SEM BACKEND
+const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
+// FAZER REQUISIÇÃO PRO BANCO DE DADOS INTERMEDIADO PELA URL
+const SUPABASE_URL = 'https://wlxwthigsrhywgfyglgd.supabase.co'
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANNON_KEY)
 
 export default function Cadastro() {
   const roteamento = useRouter()
@@ -30,8 +37,13 @@ export default function Cadastro() {
             senha: newPassword
           })
 
-          usuarios.push(contaCriada)
-          console.log(usuarios)
+          supabaseClient
+            .from('usuarios')
+            .insert({
+              nick: newUser,
+              senha: newPassword
+            })
+            .then((response) => {})
         }
 
         //roteamento.push(`./chat?username=th-fernandes`)
