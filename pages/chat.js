@@ -4,7 +4,6 @@ import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router';
 import { ButtonSendSticker } from '../src/components/buttonSendSticker'
-import { usuarios } from '../src/Usuarios';
 
 //ACESSO PELO NAVEGADOR SEM BACKEND
 const SUPABASE_ANNON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5NzUwMSwiZXhwIjoxOTU4OTczNTAxfQ.JbwXi_cKElYn09Q31Pow6iecx6FRUnHuTQHq2UuQulk'
@@ -148,11 +147,11 @@ export default function ChatPage() {
           flex: 1,
           boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
           borderRadius: '5px',
-          backgroundColor: appConfig.theme.colors.neutrals[700],
+          backgroundColor: appConfig.theme.colors.primary[400],
           height: '100%',
           maxWidth: '95%',
           maxHeight: '95vh',
-          padding: '32px',
+          padding: '1.5rem',
         }}
       >
         <Header />
@@ -162,7 +161,7 @@ export default function ChatPage() {
             display: 'flex',
             flex: 1,
             height: '80%',
-            backgroundColor: appConfig.theme.colors.neutrals[600],
+            backgroundColor: appConfig.theme.colors.neutrals['100'],
             flexDirection: 'column',
             borderRadius: '5px',
             padding: '16px',
@@ -213,9 +212,9 @@ export default function ChatPage() {
                 resize: 'none',
                 borderRadius: '5px',
                 padding: '6px 8px',
-                backgroundColor: appConfig.theme.colors.neutrals[800],
+                backgroundColor: appConfig.theme.colors.neutrals['000'],
                 marginRight: '12px',
-                color: appConfig.theme.colors.neutrals[200],
+                color: appConfig.theme.colors.neutrals[900],
               }}
             />
 
@@ -264,7 +263,7 @@ function Header() {
   return (
     <>
       <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
-        <Text variant='heading5'>
+        <Text variant='heading4' styleSheet={{color: appConfig.theme.colors.neutrals[999]}}>
           Chat
         </Text>
         <Button
@@ -288,8 +287,8 @@ function MessageList(props) {
         display: 'flex',
         flexDirection: 'column-reverse',
         flex: 1,
-        color: appConfig.theme.colors.neutrals["000"],
-        marginBottom: '16px',
+        color: appConfig.theme.colors.neutrals["900"],
+        marginBottom: '1.6rem',
         overflowX: 'hidden',
       }}
       onChange={
@@ -306,7 +305,7 @@ function MessageList(props) {
               padding: '6px',
               marginBottom: '12px',
               hover: {
-                backgroundColor: appConfig.theme.colors.neutrals[700],
+                backgroundColor: appConfig.theme.colors.neutrals[200],
               }
             }}
           >
